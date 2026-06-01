@@ -88,6 +88,7 @@ Para cada correo normalizado:
    - **Múltiples reclamos por correo:** un correo puede tener más de un problema diferenciado → un objeto por reclamo en el array `reclamos`. No inventes reclamos que no existen.
    - **Urgencia:** `critica` / `alta` / `media` / `baja` según los criterios del reference.
    - **Dimensiones CX:** usa las 5 dimensiones (`calidad_de_servicio`, `tiempos_de_espera`, `condicion_vehicular`, `comunicacion`, `precio_y_valor`) — mismas que las entrevistas, para habilitar análisis cruzado.
+   - **Emociones:** detecta las emociones del cliente externo según la taxonomía de 8 (`frustracion`, `enojo`, `indignacion`, `decepcion`, `preocupacion`, `impotencia`, `desconfianza`, `resignacion`), cada una con `intensidad` 0-100 y `cita` textual; fija `emocion_dominante` (la de mayor intensidad). Solo de la voz del cliente. Úsala como insumo para la `urgencia` (ver `references/analisis-reclamos.md`).
 4. Valida mentalmente contra `reclamoAnalysisResultSchema`. Guarda el resultado en `data/reclamos/<id>/analisis.json`.
 
 ### Paso 5 · Actualizar `data/index.json`
@@ -123,7 +124,7 @@ Para los conteos, lee **todos** los `data/reclamos/*/analisis.json` (no solo los
 Lee `assets/reporte-template.html` (puede haber sido actualizado — léelo cada vez). Es un deck brandbook con marcadores `{{...}}` para la portada y el resumen ejecutivo, y un marcador `{{SLIDES}}` donde inyectas los slides de contenido.
 
 1. Reemplaza los marcadores de portada/resumen: `{{TOTAL_RECLAMOS}}`, `{{TOTAL_CLIENTES}}`, `{{TOTAL_CRITICOS}}`, `{{PCT_PENDIENTES}}`, `{{PERIODO}}`, `{{FECHA}}`, los badges de urgencia, tipo dominante, sentimiento global y la cita de alerta crítica (cita textual del cliente, no de Gama).
-2. Genera los slides de contenido siguiendo `references/brand-rules.md` e inyéctalos en `{{SLIDES}}` (sugeridos: distribución por tipo/urgencia, tipificación 3 niveles, ranking de clientes, casos de mayor riesgo, patrones sistémicos, acciones prioritarias). Cada slide es `<div class="slide" id="slide-N"> … <div class="color-strip">…</div> </div>`.
+2. Genera los slides de contenido siguiendo `references/brand-rules.md` e inyéctalos en `{{SLIDES}}` (sugeridos: distribución por tipo/urgencia, **mapa emocional del batch** —distribución de emociones dominantes con intensidad promedio, barras horizontales—, tipificación 3 niveles, ranking de clientes, casos de mayor riesgo, patrones sistémicos, acciones prioritarias). En los slides de detalle por reclamo, muestra la `emocion_dominante` como chip con su intensidad. Cada slide es `<div class="slide" id="slide-N"> … <div class="color-strip">…</div> </div>`.
 3. Ajusta `{{TOTAL_SLIDES}}` al número total de slides.
 4. Escribe el HTML en `data/reclamos/` (o donde la usuaria prefiera) y **reporta la ruta absoluta**, sugiriendo abrirlo con doble clic.
 

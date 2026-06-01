@@ -59,6 +59,7 @@ Los correos que recibirás son frecuentemente **hilos con múltiples participant
 - `puntos_de_dolor` y sus citas
 - `citas_relevantes`
 - `sentimiento_general` y `puntuacion_global`
+- `emociones` y `emocion_dominante` (ver sección "Análisis de emociones")
 - `temas_clave` (primario)
 
 **Voz interna Gama → úsala únicamente como contexto para:**
@@ -145,7 +146,35 @@ Evalúa **solo las dimensiones que aparezcan en el correo**. Mínimo 1. Usar las
 | `comunicacion` | Falta de información, documentación incorrecta, portales con problemas |
 | `precio_y_valor` | Cobros incorrectos, recobro, facturación, cobranza |
 
+## Análisis de emociones (voz del cliente)
+
+Además del `sentimiento_general` (positivo/neutro/negativo, grano grueso), detecta las **emociones específicas** del cliente. Da granularidad para **priorizar** (emoción dominante + intensidad) y para **estudiar patrones** (todas las emociones con su cita).
+
+### Taxonomía de emociones (usar EXCLUSIVAMENTE estas 8)
+
+| Emoción | Cuándo aplica |
+|---|---|
+| `frustracion` | Intentó resolver y no lo logra; algo no avanza pese a insistir |
+| `enojo` | Molestia fuerte, tono airado, reclamo enérgico |
+| `indignacion` | Siente injusticia o falta de respeto; "es inaceptable", "una falta de respeto" |
+| `decepcion` | Esperaba más de Gama; confianza defraudada |
+| `preocupacion` | Ansiedad por consecuencias (operación detenida, costos, seguridad) |
+| `impotencia` | Siente que no tiene control ni respuesta; depende totalmente de Gama |
+| `desconfianza` | Duda de que se resuelva o de la calidad; "ya no confío" |
+| `resignacion` | Se rinde, tono apático; "ya da lo mismo", "para qué reclamo" |
+
+### Reglas de emociones
+
+1. **Solo voz del cliente externo** — mismas reglas de separación de voces. Nunca infieras emociones de correos `@gamamobility.cl`.
+2. Cada emoción detectada lleva una **`cita` textual** del cliente que la respalda (literal).
+3. `intensidad` 0-100 (qué tan marcada está la emoción en el texto).
+4. `emociones`: **todas** las que aparezcan, ordenadas por intensidad descendente. Puede ser `[]` si el correo es neutro/meramente informativo.
+5. `emocion_dominante`: la de mayor intensidad; `null` si no hay emoción clara.
+6. **Coherencia con la urgencia**: `indignacion`/`enojo` altos suelen acompañar urgencia `alta`/`critica`; `resignacion` puede señalar **riesgo de churn silencioso** (cliente que no escala pero se va). Usa la emoción dominante como insumo al fijar `urgencia`.
+
 ## Schema obligatorio (`reclamoAnalysisResultSchema`)
+
+> **Nota de contrato:** `emociones` y `emocion_dominante` son campos nuevos (v0.2). Para que el dashboard opcional de `sarai-cx` los lea, agrégalos como **opcionales** en `reclamoAnalysisResultSchema` de `src/lib/validation.ts`. Mientras tanto, el HTML del plugin los usa directamente.
 
 ```json
 {
@@ -189,6 +218,17 @@ Evalúa **solo las dimensiones que aparezcan en el correo**. Mínimo 1. Usar las
         ],
         "confianza": 0,
         "justificacion": "string — explicación breve de las puntuaciones"
+      },
+      "emociones": [
+        {
+          "emocion": "frustracion | enojo | indignacion | decepcion | preocupacion | impotencia | desconfianza | resignacion",
+          "intensidad": 0,
+          "cita": "string — frase textual del cliente que respalda la emoción"
+        }
+      ],
+      "emocion_dominante": {
+        "emocion": "frustracion | enojo | indignacion | decepcion | preocupacion | impotencia | desconfianza | resignacion | null",
+        "intensidad": 0
       }
     }
   ]
@@ -197,7 +237,7 @@ Evalúa **solo las dimensiones que aparezcan en el correo**. Mínimo 1. Usar las
 
 ## Rangos numéricos
 
-- `puntuacion_global`, `puntuacion`, `impacto`, `confianza`: 0-100
+- `puntuacion_global`, `puntuacion`, `impacto`, `confianza`, `intensidad` (emociones): 0-100
 - `peso`: 0.0-1.0 (suma de pesos debe acercarse a 1.0)
 - `frecuencia`: 1-10
 

@@ -178,6 +178,20 @@ h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; }
 .badge-green  { color: var(--gama-green);   background: rgba(34,178,96,0.12); }
 .badge-gray   { color: var(--text-secondary); background: rgba(100,100,100,0.10); border: 1px solid rgba(100,100,100,0.18); }
 
+/* ── EMOCIONES (v0.2) ── */
+.emocion-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+.emocion-chip .int { font-weight: 700; }
+.emo-enojo        { color: var(--error);          background: rgba(239,68,68,0.12); }
+.emo-indignacion  { color: var(--gama-red);       background: rgba(255,55,0,0.12); }
+.emo-frustracion,
+.emo-impotencia   { color: var(--gama-orange);    background: rgba(255,95,0,0.12); }
+.emo-preocupacion,
+.emo-decepcion,
+.emo-desconfianza { color: var(--gama-purple);    background: rgba(135,15,230,0.12); }
+.emo-resignacion  { color: var(--text-muted);     background: rgba(100,100,100,0.10); border: 1px solid rgba(100,100,100,0.18); }
+.emo-bar { height: 8px; border-radius: 9999px; background: var(--border-subtle); overflow: hidden; }
+.emo-bar > span { display: block; height: 100%; border-radius: 9999px; }
+
 /* ── KPI CARD ── */
 .kpi-card {
   background: var(--bg-card);

@@ -75,6 +75,39 @@ Son el mecanismo de diferenciación de urgencia/tipo. Siempre `border-radius: 99
 .badge-gray   { color:var(--text-secondary); background:rgba(100,100,100,0.10); border:1px solid rgba(100,100,100,0.18); }
 ```
 
+## Emociones del cliente (v0.2)
+
+El análisis detecta emociones del cliente (ver `references/analisis-reclamos.md`). Se muestran como **chips** con la intensidad (0-100) y, en el "mapa emocional" del batch, como **barras horizontales**. Mapeo a los 4 colores de marca + error + gris (NO inventar colores nuevos):
+
+| Emoción | Color | Lectura |
+|---|---|---|
+| `enojo` | `--error` (#DC2626) | ira activa, máxima alarma |
+| `indignacion` | `var(--gama-red)` | percepción de injusticia |
+| `frustracion` | `var(--gama-orange)` | fricción activa, no avanza |
+| `impotencia` | `var(--gama-orange)` | sin control, depende de Gama |
+| `preocupacion` | `var(--gama-purple)` | ansiedad por consecuencias |
+| `decepcion` | `var(--gama-purple)` | confianza defraudada |
+| `desconfianza` | `var(--gama-purple)` | duda de la resolución |
+| `resignacion` | gris (`--text-muted`) | apatía → **riesgo de churn silencioso** |
+
+```css
+.emocion-chip { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--radius-pill); font-size:10px; font-weight:600; letter-spacing:0.3px; }
+.emocion-chip .int { font-weight:700; }
+.emo-enojo        { color:var(--error);        background:rgba(239,68,68,0.12); }
+.emo-indignacion  { color:var(--gama-red);     background:rgba(255,55,0,0.12); }
+.emo-frustracion,
+.emo-impotencia   { color:var(--gama-orange);  background:rgba(255,95,0,0.12); }
+.emo-preocupacion,
+.emo-decepcion,
+.emo-desconfianza { color:var(--gama-purple);  background:rgba(135,15,230,0.12); }
+.emo-resignacion  { color:var(--text-muted);   background:rgba(100,100,100,0.10); border:1px solid rgba(100,100,100,0.18); }
+/* barra de intensidad (mapa emocional del batch) */
+.emo-bar   { height:8px; border-radius:9999px; background:var(--border-subtle); overflow:hidden; }
+.emo-bar > span { display:block; height:100%; border-radius:9999px; }
+```
+
+Regla: la barra/chip usa el color de la emoción; el `width` de `.emo-bar > span` es la `intensidad` en `%`. Sin gradientes.
+
 ## Color strip Gama Full (obligatorio)
 
 Strip de 12px con los 4 colores de marca al fondo de **cada slide** (es el uso principal del gradient Gama Full — sin gradientes en ningún otro lado):

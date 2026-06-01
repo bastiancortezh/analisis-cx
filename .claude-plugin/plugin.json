@@ -1,6 +1,6 @@
 {
   "name": "gama-cx",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Plugin Gama Mobility de analisis CX: reclamos (correos+imagenes) y voz del cliente (audio+Whisper local). Comandos /analizar-reclamos y /analizar.",
   "author": {
     "name": "Gama Mobility — DEV",
