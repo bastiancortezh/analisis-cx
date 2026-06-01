@@ -1,0 +1,247 @@
+{
+  "_fuente": "BBDD_RECLAMOS(CLASIFICACIONES).csv — taxonomía oficial Gama Mobility",
+  "_actualizado": "2026-05-20",
+  "_nota": "Fuente de verdad para clasificar reclamos en analisis-reclamos.md y validation.ts",
+  "tipos": [
+    {
+      "slug": "servicio",
+      "label": "Servicio",
+      "clasificaciones": [
+        {
+          "label": "Tiempo de espera",
+          "subclasificaciones": [
+            "Tiempo de recepción",
+            "Tiempo de entrega",
+            "Tiempo de proceso (espera repuesto)",
+            "Tiempo de proceso",
+            "Retiro reemplazo",
+            "Tiempo de proceso siniestro"
+          ]
+        },
+        {
+          "label": "Atención",
+          "subclasificaciones": [
+            "Trato",
+            "Información entregada"
+          ]
+        },
+        {
+          "label": "Estado del vehículo post taller",
+          "subclasificaciones": [
+            "Suciedad",
+            "Accesorios faltantes (propios cliente)",
+            "Accesorios faltantes (vehículo)",
+            "Daño adicional",
+            "Documentación (certificado mantención)",
+            "Reparación incompleta",
+            "No reparado (T.P)",
+            "Falla post taller (nueva)",
+            "Falla post taller (existente)",
+            "Calidad de repuestos",
+            "Nivel de combustible",
+            "Piezas no homologadas",
+            "Inconformidad del diagnóstico"
+          ]
+        },
+        {
+          "label": "Estado del vehículo post siniestro",
+          "subclasificaciones": [
+            "Suciedad",
+            "Accesorios faltantes (propios)",
+            "Accesorios faltantes (vehículo)",
+            "Daño adicional",
+            "Documentación (certificado mantención)",
+            "Trabajo incompleto",
+            "No reparado (T.P)",
+            "No reparado (T.E)",
+            "Falla post taller (nueva)",
+            "Falla post taller (existente)",
+            "Nivel de combustible",
+            "Mal ejecutado"
+          ]
+        },
+        {
+          "label": "Reemplazo",
+          "subclasificaciones": [
+            "Tiempo de entrega desde solicitud",
+            "Estado del reemplazo (mecánico)",
+            "Estado del reemplazo (estático)",
+            "Suciedad",
+            "Logística",
+            "Inadecuado",
+            "Documentación"
+          ]
+        },
+        {
+          "label": "Recobro",
+          "subclasificaciones": [
+            "Excesivo",
+            "No aplica",
+            "Mal cobrado"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "entrega_nueva",
+      "label": "Entrega nueva",
+      "clasificaciones": [
+        {
+          "label": "Estado del vehículo",
+          "subclasificaciones": [
+            "Suciedad",
+            "Falla de accesorio de VH",
+            "Equipamiento incompleto",
+            "Falla mecánica"
+          ]
+        },
+        {
+          "label": "Tiempo de espera",
+          "subclasificaciones": [
+            "Tiempo de entrega"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "entrega_spot",
+      "label": "Entrega Spot",
+      "clasificaciones": [
+        {
+          "label": "Estado del vehículo",
+          "subclasificaciones": [
+            "Suciedad",
+            "Falla de accesorio de VH",
+            "Desgaste VH (general)",
+            "Desgaste de accesorio"
+          ]
+        },
+        {
+          "label": "Tiempo de espera",
+          "subclasificaciones": [
+            "Tiempo de entrega",
+            "Tiempo de devolución"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "atencion_personal",
+      "label": "Atención personal",
+      "clasificaciones": [
+        {
+          "label": "Transportista",
+          "subclasificaciones": [
+            "Trato",
+            "Presentación personal",
+            "Tiempo de respuesta",
+            "Comportamiento",
+            "Identificación"
+          ]
+        },
+        {
+          "label": "Supervisor",
+          "subclasificaciones": [
+            "Trato",
+            "Presentación personal",
+            "Envío de documentación",
+            "Tiempo de respuesta",
+            "Comportamiento"
+          ]
+        },
+        {
+          "label": "Ejecutivo comercial",
+          "subclasificaciones": [
+            "Identificación",
+            "Trato",
+            "Presentación personal",
+            "Tiempo de respuesta",
+            "Comportamiento"
+          ]
+        },
+        {
+          "label": "Taller",
+          "subclasificaciones": [
+            "Identificación",
+            "Trato",
+            "Presentación personal",
+            "Tiempo de respuesta",
+            "Comportamiento"
+          ]
+        },
+        {
+          "label": "Grúa",
+          "subclasificaciones": [
+            "Identificación",
+            "Puntualidad",
+            "Trato",
+            "Presentación personal",
+            "Tiempo de respuesta",
+            "Comportamiento"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "ti",
+      "label": "TI",
+      "clasificaciones": [
+        {
+          "label": "Portal de siniestros",
+          "subclasificaciones": [
+            "Identificación",
+            "Carga de documentos"
+          ]
+        },
+        {
+          "label": "Portal de clientes",
+          "subclasificaciones": [
+            "Acceso"
+          ]
+        },
+        {
+          "label": "Portal de agendamiento",
+          "subclasificaciones": []
+        }
+      ]
+    },
+    {
+      "slug": "facturacion",
+      "label": "Facturación",
+      "clasificaciones": [
+        {
+          "label": "Error en documento",
+          "subclasificaciones": [
+            "Cobro adicional",
+            "Faltante",
+            "Datos incorrectos"
+          ]
+        },
+        {
+          "label": "Sin respaldo",
+          "subclasificaciones": [
+            "Tag",
+            "Recobro",
+            "Flota"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "cobranza",
+      "label": "Cobranza",
+      "clasificaciones": [
+        {
+          "label": "Ejecutivo cobranza",
+          "subclasificaciones": []
+        },
+        {
+          "label": "Notificaciones",
+          "subclasificaciones": [
+            "Trato"
+          ]
+        }
+      ]
+    }
+  ]
+}

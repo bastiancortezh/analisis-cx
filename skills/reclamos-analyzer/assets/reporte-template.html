@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<!--
+  Template del Reporte de Reclamos CX · Gama Mobility (brandbook oficial).
+  Derivado de sarai-cx/data/presentaciones/2026-05-27-reporte-reclamos.html.
+
+  Cómo usarlo (lo hace la skill reclamos-analyzer):
+    1. Reemplazar los marcadores {{...}} de portada y resumen con los datos del batch.
+    2. Generar el HTML de los slides de contenido (distribución, tipificación, ranking,
+       casos críticos, patrones, acciones) siguiendo references/brand-rules.md y
+       inyectarlos en {{SLIDES}} como bloques <div class="slide" id="slide-N">…</div>.
+    3. Ajustar {{TOTAL_SLIDES}} al número total de slides (cover + resumen + los inyectados).
+    4. Funciona con doble clic, sin servidor. Las rutas de logos son relativas a assets/.
+-->
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte de Reclamos CX — Gama Mobility · {{PERIODO}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gama-red:    #FF3700;
+  --gama-orange: #FF5F00;
+  --gama-purple: #870FE6;
+  --gama-green:  #22B260;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-pill: 9999px;
+  --space-xs:    4px;
+  --space-sm:    8px;
+  --space-md:    16px;
+  --space-lg:    24px;
+  --space-xl:    32px;
+  --space-2xl:   48px;
+  --space-3xl:   64px;
+}
+[data-theme="light"] {
+  --bg-page:        #FAFAFA;
+  --bg-surface:     #F5F5F5;
+  --bg-card:        #FFFFFF;
+  --bg-hover:       #EFEFEF;
+  --text-primary:   #323232;
+  --text-secondary: #666666;
+  --text-muted:     #999999;
+  --border:         #E0E0E0;
+  --border-subtle:  #EEEEEE;
+  --error:          #DC2626;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; }
+
+/* ── DECK ── */
+.deck { width: 100vw; height: 100vh; position: relative; }
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  background: var(--bg-page);
+  overflow: hidden;
+}
+.slide.active { opacity: 1; pointer-events: all; }
+
+.slide-inner {
+  flex: 1;
+  padding: var(--space-xl) var(--space-3xl) calc(var(--space-xl) + 12px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── COLOR STRIP ── */
+.color-strip {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 12px;
+  display: flex;
+  flex-shrink: 0;
+}
+.color-strip span { flex: 1; }
+
+/* ── SLIDE HEADER ── */
+.slide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+.logo-sm { height: 28px; object-fit: contain; }
+.slide-tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+}
+
+/* ── NAVIGATION ── */
+.nav-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px; height: 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  color: var(--text-secondary);
+  transition: border-color 0.2s, color 0.2s;
+}
+.nav-btn:hover { border-color: var(--gama-orange); color: var(--gama-orange); }
+#prevBtn { left: 12px; }
+#nextBtn { right: 12px; }
+
+.counter {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  z-index: 300;
+  text-transform: uppercase;
+}
+
+/* ── DOTS PROGRESS ── */
+.dots {
+  position: fixed;
+  bottom: 20px;
+  right: var(--space-3xl);
+  display: flex;
+  gap: var(--space-sm);
+  z-index: 300;
+}
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background 0.2s, width 0.2s;
+  cursor: pointer;
+}
+.dot.active { background: var(--gama-orange); width: 18px; border-radius: 3px; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.badge-red    { color: var(--error);        background: rgba(239,68,68,0.12); }
+.badge-orange { color: var(--gama-orange);  background: rgba(255,95,0,0.12); }
+.badge-purple { color: var(--gama-purple);  background: rgba(135,15,230,0.12); }
+.badge-green  { color: var(--gama-green);   background: rgba(34,178,96,0.12); }
+.badge-gray   { color: var(--text-secondary); background: rgba(100,100,100,0.10); border: 1px solid rgba(100,100,100,0.18); }
+
+/* ── KPI CARD ── */
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+.kpi-value {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: var(--space-xs);
+}
+.kpi-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+}
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ── BAR CHART ── */
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: 10px;
+}
+.bar-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  flex-shrink: 0;
+}
+.bar-track {
+  flex: 1;
+  height: 26px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  transition: width 0.6s ease;
+}
+.bar-cnt {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ── QUOTE CARD ── */
+.quote-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gama-orange);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+.quote-text {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.65;
+  margin-bottom: var(--space-sm);
+}
+.quote-src {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+
+/* ── PATTERN CARD ── */
+.pattern-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+}
+.pattern-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gama-orange);
+  line-height: 1;
+  min-width: 36px;
+}
+.pattern-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  color: var(--text-primary);
+}
+.pattern-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.pattern-desc strong { color: var(--text-primary); }
+
+/* ── ACTION ITEM ── */
+.action-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+.action-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.action-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.action-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── CLIENT CARD ── */
+.client-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+}
+.client-name {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  color: var(--text-primary);
+}
+.client-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: var(--space-sm);
+}
+.client-alert {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ── PRINT ── */
+@media print {
+  body { overflow: visible; height: auto; }
+  .deck { height: auto; }
+  .slide {
+    position: relative;
+    opacity: 1;
+    pointer-events: all;
+    page-break-after: always;
+    height: 100vh;
+    min-height: 720px;
+  }
+  .nav-btn, .counter, .dots { display: none; }
+}
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: var(--space-md) 0; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ════════════════════════════════════════
+     SLIDE 1 — COVER
+════════════════════════════════════════ -->
+<div class="slide active" id="slide-1">
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; padding: var(--space-3xl) var(--space-3xl) calc(var(--space-3xl) + 12px); position:relative;">
+
+    <!-- Top-left: logo grande (horizontal largo) -->
+    <div style="position:absolute; top:var(--space-xl); left:var(--space-3xl);">
+      <img src="logos/gamamobility-logo_hz-negocios-n.png"
+           alt="Gama Mobility" style="height:44px; object-fit:contain;">
+    </div>
+
+    <!-- Bottom content -->
+    <div>
+      <div style="margin-bottom:var(--space-md);">
+        <span class="badge badge-red">Informe Interno · Confidencial</span>
+      </div>
+      <h1 style="font-size:clamp(40px,5vw,64px); font-weight:700; line-height:0.95; margin-bottom:var(--space-md); color:var(--text-primary);">
+        Reporte de<br>Reclamos CX
+      </h1>
+      <p style="font-size:16px; color:var(--text-secondary); font-weight:400; line-height:1.6; max-width:520px; margin-bottom:var(--space-xl);">
+        Análisis de <strong style="color:var(--text-primary);">{{TOTAL_RECLAMOS}} reclamos</strong> ·
+        <strong style="color:var(--text-primary);">{{TOTAL_CLIENTES}} clientes</strong> afectados ·
+        Período {{PERIODO}}
+      </p>
+      <div class="divider" style="max-width:480px;"></div>
+      <div style="display:flex; gap:var(--space-3xl); margin-top:var(--space-md);">
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);">Preparado por</div>
+          <div style="font-size:13px;color:var(--text-secondary);margin-top:3px;">Gama CX · Gama Mobility</div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);">Fecha</div>
+          <div style="font-size:13px;color:var(--text-secondary);margin-top:3px;">{{FECHA}}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative accent line (única excepción de gradient, vertical 3px) -->
+    <div style="position:absolute; top:0; right:0; width:3px; height:100%; background:linear-gradient(180deg,var(--gama-red),var(--gama-orange),var(--gama-purple),var(--gama-green));"></div>
+
+  </div>
+  <div class="color-strip">
+    <span style="background:#FF3700"></span>
+    <span style="background:#FF5F00"></span>
+    <span style="background:#870FE6"></span>
+    <span style="background:#22B260"></span>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 2 — RESUMEN EJECUTIVO
+════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div class="slide-inner">
+    <div class="slide-header">
+      <img src="logos/gamamobility-logo_ico-n.png" alt="Gama Mobility" class="logo-sm">
+      <span class="slide-tag">Resumen Ejecutivo</span>
+    </div>
+
+    <h2 style="font-size:28px; font-weight:700; margin-bottom:4px;">Estado actual de reclamos</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:var(--space-lg);">
+      {{RESUMEN_SUBTITULO}}
+    </p>
+
+    <!-- KPI row -->
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:var(--space-md); margin-bottom:var(--space-lg);">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Reclamos</div>
+        <div class="kpi-value" style="color:var(--text-primary);">{{TOTAL_RECLAMOS}}</div>
+        <div class="kpi-sub">{{PERIODO}}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Clientes afectados</div>
+        <div class="kpi-value" style="color:var(--gama-orange);">{{TOTAL_CLIENTES}}</div>
+        <div class="kpi-sub">Empresas distintas</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Reclamos críticos</div>
+        <div class="kpi-value" style="color:var(--error);">{{TOTAL_CRITICOS}}</div>
+        <div class="kpi-sub">{{CRITICOS_SUB}}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Pendientes</div>
+        <div class="kpi-value" style="color:var(--gama-red);">{{PCT_PENDIENTES}}</div>
+        <div class="kpi-sub">Sin cierre registrado</div>
+      </div>
+    </div>
+
+    <!-- Bottom row -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-md); flex:1;">
+      <div class="quote-card">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--error);margin-bottom:var(--space-sm);">⚠ {{ALERTA_TITULO}}</div>
+        <div class="quote-text">{{ALERTA_CITA}}</div>
+        <div class="quote-src">{{ALERTA_FUENTE}}</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:var(--space-md);">
+        <div class="kpi-card" style="flex:1;">
+          <div class="kpi-label">Urgencia predominante</div>
+          <div style="display:flex; flex-wrap:wrap; gap:var(--space-xs); margin-top:var(--space-sm);">
+            {{BADGES_URGENCIA}}
+          </div>
+        </div>
+        <div class="kpi-card" style="flex:1;">
+          <div class="kpi-label">Tipo dominante</div>
+          <div style="display:flex; align-items:center; gap:var(--space-sm); margin-top:var(--space-sm);">
+            <span class="badge badge-purple">{{TIPO_DOMINANTE}}</span>
+          </div>
+          <div class="kpi-sub" style="margin-top:6px;">{{TIPO_DOMINANTE_SUB}}</div>
+        </div>
+        <div class="kpi-card" style="flex:1;">
+          <div class="kpi-label">Sentimiento global</div>
+          <div style="display:flex; align-items:center; gap:var(--space-sm); margin-top:var(--space-sm);">
+            <span class="badge badge-red">{{SENTIMIENTO_GLOBAL}}</span>
+          </div>
+          <div class="kpi-sub" style="margin-top:6px;">{{SENTIMIENTO_GLOBAL_SUB}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="color-strip">
+    <span style="background:#FF3700"></span><span style="background:#FF5F00"></span>
+    <span style="background:#870FE6"></span><span style="background:#22B260"></span>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SLIDES DE CONTENIDO (inyectados por la skill)
+     Distribución · Tipificación 3 niveles · Ranking de clientes ·
+     Casos críticos · Patrones sistémicos · Acciones prioritarias.
+     Cada uno: <div class="slide" id="slide-N"> … <div class="color-strip">…</div> </div>
+     Seguir references/brand-rules.md y la estructura de los slides de arriba.
+════════════════════════════════════════ -->
+{{SLIDES}}
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<button class="nav-btn" id="prevBtn" onclick="navigate(-1)" title="Anterior (←)">
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M9 11L5 7L9 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+<button class="nav-btn" id="nextBtn" onclick="navigate(1)" title="Siguiente (→)">
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<div class="counter" id="counter">1 / {{TOTAL_SLIDES}}</div>
+
+<div class="dots" id="dots"></div>
+
+<script>
+  const TOTAL = {{TOTAL_SLIDES}};
+  let current = 1;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    if (n < 1 || n > TOTAL || n === current) return;
+    document.getElementById('slide-' + current).classList.remove('active');
+    dotsEl.children[current - 1].classList.remove('active');
+    current = n;
+    document.getElementById('slide-' + current).classList.add('active');
+    dotsEl.children[current - 1].classList.add('active');
+    document.getElementById('counter').textContent = current + ' / ' + TOTAL;
+    document.getElementById('prevBtn').style.opacity = current === 1 ? '0.25' : '1';
+    document.getElementById('nextBtn').style.opacity = current === TOTAL ? '0.25' : '1';
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') navigate(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+  });
+
+  // Init state
+  document.getElementById('prevBtn').style.opacity = '0.25';
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+# === Datos reales de clientes — NUNCA versionar (PII, Ley 21.719) ===
+# Correos de reclamo, audios y todos los analisis generados viven locales.
+data/
+**/data/
+
+# === Caches de modelos Whisper (faster-whisper) ===
+.cache/
+**/.cache/
+
+# === Python ===
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# === Archivos de input/temporales (PII / basura) ===
+*.pst
+*.tmp
+
+# === Sistema ===
+.DS_Store
+Thumbs.db
+
+# === NO excluir los assets del plugin ===
+# templates HTML y logos son parte del plugin y SI van al repo.
+!skills/**/assets/
+!skills/**/assets/**

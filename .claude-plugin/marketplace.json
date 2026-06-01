@@ -1,0 +1,18 @@
+{
+  "name": "gama-cx-marketplace",
+  "owner": {
+    "name": "Gama Mobility — DEV",
+    "url": "https://www.gamamobility.cl"
+  },
+  "plugins": [
+    {
+      "name": "gama-cx",
+      "description": "Analisis CX Gama Mobility: reclamos (correos+imagenes) y voz del cliente (audio+Whisper local). Comandos /analizar-reclamos y /analizar.",
+      "source": {
+        "source": "github",
+        "repo": "bastiancortezh/analisis-cx"
+      },
+      "homepage": "https://github.com/bastiancortezh/analisis-cx"
+    }
+  ]
+}

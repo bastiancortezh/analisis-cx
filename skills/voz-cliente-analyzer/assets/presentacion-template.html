@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{HEAD_TITLE}}</title>
+<script>
+  // Anti-FOUC: resolve theme before paint
+  (function () {
+    var stored = null;
+    try { stored = localStorage.getItem('gama-theme'); } catch (e) {}
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', stored || (prefersDark ? 'dark' : 'light'));
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gama-red:    #FF3700;
+    --gama-orange: #FF5F00;
+    --gama-purple: #870FE6;
+    --gama-green:  #22B260;
+
+    --space-xs:  4px;
+    --space-sm:  8px;
+    --space-md:  16px;
+    --space-lg:  24px;
+    --space-xl:  32px;
+    --space-2xl: 48px;
+    --space-3xl: 64px;
+
+    --radius-sm:   8px;
+    --radius-md:   12px;
+    --radius-lg:   16px;
+    --radius-pill: 9999px;
+
+    /* Slide canvas — brandbook: 1280x720 */
+    --slide-w: 1280px;
+    --slide-h: 720px;
+  }
+
+  [data-theme="light"] {
+    --bg-page: #E5E5E5; --bg-slide: #FAFAFA; --bg-card: #FFFFFF;
+    --bg-surface: #F5F5F5; --bg-hover: #EFEFEF;
+    --text-primary: #323232; --text-secondary: #666666; --text-muted: #999999;
+    --border: #E0E0E0; --border-subtle: #EEEEEE;
+    --accent: var(--gama-orange); --accent-soft: rgba(255,95,0,0.10);
+    --green-soft: rgba(34,178,96,0.12); --purple-soft: rgba(135,15,230,0.12);
+    --orange-soft: rgba(255,95,0,0.12); --red-soft: rgba(239,68,68,0.12);
+    --red: #DC2626;
+    --shadow-slide: 0 4px 32px rgba(0,0,0,0.10);
+  }
+
+  [data-theme="dark"] {
+    --bg-page: #000000; --bg-slide: #0A0A0A; --bg-card: #1E1E1E;
+    --bg-surface: #1A1A1A; --bg-hover: #2A2A2A;
+    --text-primary: #FFFFFF; --text-secondary: #B3B3B3; --text-muted: #808080;
+    --border: #333333; --border-subtle: #262626;
+    --accent: var(--gama-orange); --accent-soft: rgba(255,95,0,0.14);
+    --green-soft: rgba(34,178,96,0.18); --purple-soft: rgba(135,15,230,0.18);
+    --orange-soft: rgba(255,95,0,0.18); --red-soft: rgba(239,68,68,0.18);
+    --red: #EF4444;
+    --shadow-slide: 0 4px 32px rgba(0,0,0,0.50);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--text-primary); background: var(--bg-page);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Deck container — slides stacked vertically, centered */
+  .deck {
+    display: flex; flex-direction: column; align-items: center;
+    gap: var(--space-xl); padding: var(--space-xl) var(--space-md) var(--space-3xl);
+  }
+
+  /* Slide: fixed 1280x720, brandbook canvas */
+  .slide {
+    position: relative;
+    width: var(--slide-w); height: var(--slide-h);
+    background: var(--bg-slide);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-slide);
+    padding: var(--space-3xl);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  /* Logo swap by theme (header icon) */
+  .slide-logo { height: 32px; width: auto; display: none; }
+  [data-theme="light"] .slide-logo[data-variant="light"] { display: block; }
+  [data-theme="dark"]  .slide-logo[data-variant="dark"]  { display: block; }
+  /* Cover logo (large, horizontal) */
+  .cover-logo { height: 64px; width: auto; display: none; }
+  [data-theme="light"] .cover-logo[data-variant="light"] { display: block; }
+  [data-theme="dark"]  .cover-logo[data-variant="dark"]  { display: block; }
+
+  /* Slide header: logo + scope tag */
+  .slide-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: var(--space-lg);
+  }
+  .slide-tag {
+    font-size: 11px; font-weight: 700; color: var(--gama-orange);
+    letter-spacing: 3px; text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: 'Mont','Montserrat',sans-serif;
+    font-size: 48px; line-height: 1.05; font-weight: 700;
+    letter-spacing: -0.5px; margin: 0 0 var(--space-md);
+  }
+  h2 {
+    font-family: 'Mont','Montserrat',sans-serif;
+    font-size: 32px; line-height: 1.1; font-weight: 700;
+    letter-spacing: -0.3px; margin: 0 0 var(--space-md);
+  }
+  h3 {
+    font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--gama-orange);
+    margin: 0 0 var(--space-sm);
+  }
+  p { font-size: 14px; line-height: 1.55; color: var(--text-secondary); margin: 0 0 var(--space-sm); }
+  .lead { font-size: 18px; color: var(--text-primary); line-height: 1.5; }
+
+  /* Cover */
+  .cover { justify-content: space-between; }
+  .cover .cover-top { display: flex; justify-content: flex-start; }
+  .cover .cover-main { display: flex; flex-direction: column; justify-content: center; flex: 1; }
+  .cover h1 { font-size: 56px; }
+  .cover .cover-sub {
+    font-size: 11px; font-weight: 700; color: var(--gama-orange);
+    letter-spacing: 4px; text-transform: uppercase; margin-bottom: var(--space-md);
+  }
+  .cover .cover-meta { font-size: 14px; color: var(--text-secondary); margin-top: var(--space-lg); }
+  .cover .cover-meta strong { color: var(--text-primary); }
+
+  /* KPI cards (Z-pattern, max 4 per row) — sin border-left coloreado */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); margin-top: var(--space-md); }
+  .kpi-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .kpi-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .kpi-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: var(--space-lg);
+    display: flex; flex-direction: column; gap: var(--space-sm);
+  }
+  .kpi-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--text-secondary);
+  }
+  .kpi-value { font-family: 'Mont','Montserrat',sans-serif; font-size: 48px; font-weight: 700; line-height: 1; }
+  .kpi-delta { font-size: 12px; font-weight: 600; }
+  .kpi-delta-positive { color: var(--gama-green); }
+  .kpi-delta-negative { color: var(--red); }
+  .kpi-delta-neutral  { color: var(--text-muted); }
+
+  /* Badges / pills */
+  .badge {
+    display: inline-block; padding: 3px 12px; border-radius: var(--radius-pill);
+    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .badge-green  { color: var(--gama-green);  background: var(--green-soft); }
+  .badge-purple { color: var(--gama-purple); background: var(--purple-soft); }
+  .badge-orange { color: var(--gama-orange); background: var(--orange-soft); }
+  .badge-red    { color: var(--red);         background: var(--red-soft); }
+
+  /* Content cards (pain points, acciones) */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-top: var(--space-md); }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: var(--space-lg);
+  }
+  .card h4 {
+    margin: 0 0 var(--space-sm); font-family: 'Montserrat',sans-serif;
+    font-size: 13px; font-weight: 700; color: var(--text-primary);
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm);
+  }
+  .card p, .card li { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0 0 var(--space-xs); }
+  .card ul { margin: var(--space-sm) 0 0; padding-left: var(--space-md); }
+
+  /* Quote card */
+  .quote {
+    background: var(--accent-soft); border-radius: var(--radius-md);
+    padding: var(--space-lg); margin: var(--space-md) 0;
+    font-size: 18px; line-height: 1.55; color: var(--text-primary);
+  }
+  .quote .who { display: block; margin-top: var(--space-sm); font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+
+  /* Bar chart (SVG inline) helper styles */
+  .bar-row { display: grid; grid-template-columns: 180px 1fr 48px; align-items: center; gap: var(--space-md); margin-bottom: var(--space-sm); font-size: 12px; }
+  .bar-label { color: var(--text-primary); font-weight: 600; }
+  .bar-track { background: var(--bg-surface); border-radius: var(--radius-pill); height: 14px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: var(--radius-pill); }
+  .bar-fill.green  { background: var(--gama-green); }
+  .bar-fill.orange { background: var(--gama-orange); }
+  .bar-fill.red    { background: var(--red); }
+  .bar-fill.purple { background: var(--gama-purple); }
+  .bar-fill.muted  { background: var(--text-muted); }
+  .bar-num { text-align: right; color: var(--text-secondary); font-weight: 600; }
+
+  /* Slide footer: page number + scope */
+  .slide-foot {
+    position: absolute; left: var(--space-3xl); right: var(--space-3xl);
+    bottom: var(--space-lg);
+    display: flex; justify-content: space-between;
+    font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Color strip Gama Full — fondo de cada slide (brandbook obligatorio) */
+  .color-strip {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 12px; display: flex;
+  }
+  .color-strip span { flex: 1; }
+
+  /* Theme toggle — fixed, no per-slide button */
+  .theme-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    display: inline-flex; align-items: center; gap: var(--space-sm);
+    background: var(--bg-card); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: var(--radius-pill);
+    padding: 6px 12px; cursor: pointer;
+    font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .theme-toggle .icon { width: 12px; height: 12px; }
+  [data-theme="light"] .theme-toggle .icon-sun  { display: none; }
+  [data-theme="dark"]  .theme-toggle .icon-moon { display: none; }
+  [data-theme="light"] .theme-toggle .label::after { content: 'Modo oscuro'; }
+  [data-theme="dark"]  .theme-toggle .label::after { content: 'Modo claro'; }
+
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    body { background: #FFFFFF; }
+    .deck { gap: 0; padding: 0; }
+    .slide { box-shadow: none; border: none; border-radius: 0; page-break-after: always; break-after: page; }
+    .theme-toggle { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" type="button" aria-label="Cambiar entre modo claro y oscuro" onclick="toggleTheme()">
+  <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  <svg class="icon icon-sun"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+  <span class="label"></span>
+</button>
+
+<div class="deck">
+
+  <!-- ============ SLIDE 1 · COVER ============ -->
+  <section class="slide cover">
+    <div class="cover-top">
+      <img class="cover-logo" data-variant="light" src="logos/gamamobility-logo_hz-negocios-n.png" alt="Gama Mobility" onerror="this.style.display='none'">
+      <img class="cover-logo" data-variant="dark"  src="logos/gamamobility-logo_hz-negocios-b.png" alt="Gama Mobility" onerror="this.style.display='none'">
+    </div>
+    <div class="cover-main">
+      <div class="cover-sub">{{COVER_SUB}}</div>
+      <h1>{{COVER_TITLE}}</h1>
+      <div class="cover-meta">
+        <strong>{{COVER_AUTHOR}}</strong> · {{COVER_DATE}}
+      </div>
+    </div>
+    <div class="slide-foot"><span>Gama Mobility</span><span>{{SCOPE_LABEL}}</span></div>
+    <div class="color-strip" aria-hidden="true"><span style="background:#FF3700"></span><span style="background:#FF5F00"></span><span style="background:#870FE6"></span><span style="background:#22B260"></span></div>
+  </section>
+
+  <!-- ============ SLIDE 2 · TL;DR ============ -->
+  <section class="slide">
+    <div class="slide-head">
+      <img class="slide-logo" data-variant="light" src="logos/gamamobility-logo_ico-n.png" alt="Gama" onerror="this.style.display='none'">
+      <img class="slide-logo" data-variant="dark"  src="logos/gamamobility-logo_ico-b.png" alt="Gama" onerror="this.style.display='none'">
+      <span class="slide-tag">TL;DR</span>
+    </div>
+    <h2>{{TLDR_TITLE}}</h2>
+    <p class="lead">{{TLDR_LEAD}}</p>
+    <div class="kpi-row cols-3">
+      {{TLDR_KPIS}}
+      <!-- Cada KPI:
+      <div class="kpi-card">
+        <span class="kpi-label">Sentimiento</span>
+        <span class="kpi-value">Positivo</span>
+        <span class="kpi-delta kpi-delta-positive">▲ vs. sesión anterior</span>
+      </div>
+      -->
+    </div>
+    <div class="slide-foot"><span>2 · TL;DR</span><span>{{SCOPE_LABEL}}</span></div>
+    <div class="color-strip" aria-hidden="true"><span style="background:#FF3700"></span><span style="background:#FF5F00"></span><span style="background:#870FE6"></span><span style="background:#22B260"></span></div>
+  </section>
+
+  <!-- ============ SLIDE 3 · SALUD ACTUAL (dimensiones) ============ -->
+  <section class="slide">
+    <div class="slide-head">
+      <img class="slide-logo" data-variant="light" src="logos/gamamobility-logo_ico-n.png" alt="Gama" onerror="this.style.display='none'">
+      <img class="slide-logo" data-variant="dark"  src="logos/gamamobility-logo_ico-b.png" alt="Gama" onerror="this.style.display='none'">
+      <span class="slide-tag">Salud actual</span>
+    </div>
+    <h2>Dimensiones CX</h2>
+    <p>Puntuación 0-100 por dimensión. {{SALUD_LEAD}}</p>
+    <div style="margin-top:var(--space-lg)">
+      {{DIMENSIONES_BARS}}
+      <!-- Cada dimensión:
+      <div class="bar-row">
+        <span class="bar-label">Calidad de servicio</span>
+        <div class="bar-track"><div class="bar-fill green" style="width:78%"></div></div>
+        <span class="bar-num">78</span>
+      </div>
+      -->
+    </div>
+    <div class="slide-foot"><span>3 · Salud actual</span><span>{{SCOPE_LABEL}}</span></div>
+    <div class="color-strip" aria-hidden="true"><span style="background:#FF3700"></span><span style="background:#FF5F00"></span><span style="background:#870FE6"></span><span style="background:#22B260"></span></div>
+  </section>
+
+  <!-- ============ SLIDE 4 · PAIN POINTS ============ -->
+  <section class="slide">
+    <div class="slide-head">
+      <img class="slide-logo" data-variant="light" src="logos/gamamobility-logo_ico-n.png" alt="Gama" onerror="this.style.display='none'">
+      <img class="slide-logo" data-variant="dark"  src="logos/gamamobility-logo_ico-b.png" alt="Gama" onerror="this.style.display='none'">
+      <span class="slide-tag">Puntos de dolor</span>
+    </div>
+    <h2>Lo que más duele</h2>
+    <p>Ordenado por impacto × frecuencia. {{PAIN_LEAD}}</p>
+    <div class="card-grid">
+      {{PAIN_CARDS}}
+      <!-- Cada pain point:
+      <div class="card">
+        <h4>Tiempos de espera <span class="badge badge-red">Alta</span></h4>
+        <p>Descripción del punto de dolor del cliente.</p>
+      </div>
+      -->
+    </div>
+    <div class="slide-foot"><span>4 · Puntos de dolor</span><span>{{SCOPE_LABEL}}</span></div>
+    <div class="color-strip" aria-hidden="true"><span style="background:#FF3700"></span><span style="background:#FF5F00"></span><span style="background:#870FE6"></span><span style="background:#22B260"></span></div>
+  </section>
+
+  <!-- ============ SLIDE 5 · CITAS QUE IMPORTAN ============ -->
+  <section class="slide">
+    <div class="slide-head">
+      <img class="slide-logo" data-variant="light" src="logos/gamamobility-logo_ico-n.png" alt="Gama" onerror="this.style.display='none'">
+      <img class="slide-logo" data-variant="dark"  src="logos/gamamobility-logo_ico-b.png" alt="Gama" onerror="this.style.display='none'">
+      <span class="slide-tag">Voz del cliente</span>
+    </div>
+    <h2>Citas que importan</h2>
+    {{CITAS_HTML}}
+    <!-- Cada cita:
+    <div class="quote">"Cita textual literal del cliente."<span class="who">— {{SCOPE_LABEL}}</span></div>
+    -->
+    <div class="slide-foot"><span>5 · Voz del cliente</span><span>{{SCOPE_LABEL}}</span></div>
+    <div class="color-strip" aria-hidden="true"><span style="background:#FF3700"></span><span style="background:#FF5F00"></span><span style="background:#870FE6"></span><span style="background:#22B260"></span></div>
+  </section>
+
+  <!-- ============ SLIDE 6 · ACCIONES RECOMENDADAS ============ -->
+  <section class="slide">
+    <div class="slide-head">
+      <img class="slide-logo" data-variant="light" src="logos/gamamobility-logo_ico-n.png" alt="Gama" onerror="this.style.display='none'">
+      <img class="slide-logo" data-variant="dark"  src="logos/gamamobility-logo_ico-b.png" alt="Gama" onerror="this.style.display='none'">
+      <span class="slide-tag">Next steps</span>
+    </div>
+    <h2>Acciones recomendadas</h2>
+    <div class="card-grid">
+      {{ACCIONES_CARDS}}
+      <!-- Cada acción:
+      <div class="card">
+        <h4>Acción concreta <span class="badge badge-orange">Media</span></h4>
+        <p>Justificación breve de por qué y el impacto esperado.</p>
+      </div>
+      -->
+    </div>
+    <div class="slide-foot"><span>6 · Next steps</span><span>{{SCOPE_LABEL}}</span></div>
+    <div class="color-strip" aria-hidden="true"><span style="background:#FF3700"></span><span style="background:#FF5F00"></span><span style="background:#870FE6"></span><span style="background:#22B260"></span></div>
+  </section>
+
+</div>
+
+<script>
+  function toggleTheme() {
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('gama-theme', next); } catch (e) {}
+  }
+</script>
+
+</body>
+</html>
